@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="MangaWorkflow.APIWebApp.HuyNQ/MangaWorkflow.APIWebApp.HuyNQ.csproj" Id="d56825b2-f6bc-42e6-9749-3be3a0e81a43" />
+  <Project Path="MangaWorkflow.Entities.HuyNQ/MangaWorkflow.Entities.HuyNQ.csproj" Id="d4ac29c0-c56a-4f22-a943-706f04e53b18" />
+  <Project Path="MangaWorkflow.Repositories.HuyNQ/MangaWorkflow.Repositories.HuyNQ.csproj" Id="b3d6cb56-f413-4a34-a5a4-362fba52533e" />
+  <Project Path="MangaWorkflow.Services.HuyNQ/MangaWorkflow.Services.HuyNQ.csproj" Id="63e379d2-b25a-40d7-a826-e5cdbc2c4846" />
+</Solution>

@@ -1,14 +1,15 @@
 ﻿using MangaWorkflow.Entities.HuyNQ.Models;
+using MangaWorkflow.Services.HuyNQ.DTOs.Chapter;
 
 namespace MangaWorkflow.Services.HuyNQ;
 
 public interface IChapterHuyNqService
 {
     Task<List<ChapterHuyNq>> GetAllAsync();
-    Task<ChapterHuyNq?> GetByIdAsync(int id);
+    Task<ChapterGetByIdResponse?> GetByIdAsync(int id);
     Task<List<ChapterHuyNq>> SearchAsync(string? title, int? chapterNumber, bool? approved);
 
-    Task<int> CreateAsync(ChapterHuyNq chapter);
-    Task<int> UpdateAsync(ChapterHuyNq chapter);
+    Task<int> CreateAsync(ChapterCreateRequest chapter);
+    Task<int> UpdateAsync(int id, ChapterUpdateRequest chapter);
     Task<bool> DeleteAsync(int id);
 }

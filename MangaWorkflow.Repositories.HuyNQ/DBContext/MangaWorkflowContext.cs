@@ -49,7 +49,7 @@ public partial class MangaWorkflowContext : DbContext
             entity.ToTable("ChapterHuyNQ");
 
             entity.Property(e => e.HuynqId)
-                .ValueGeneratedNever()
+                .UseIdentityColumn()
                 .HasColumnName("huynq_id");
             entity.Property(e => e.Approved).HasColumnName("approved");
             entity.Property(e => e.ChapterMetaHuynqId).HasColumnName("chapter_meta_huynq_id");

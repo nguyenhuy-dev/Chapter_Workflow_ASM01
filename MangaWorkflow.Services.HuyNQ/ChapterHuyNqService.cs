@@ -1,5 +1,7 @@
 ﻿using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Repositories.HuyNQ;
+using MangaWorkflow.Services.HuyNQ.DTOs.Chapter;
+using Mapster;
 
 namespace MangaWorkflow.Services.HuyNQ;
 
@@ -7,18 +9,17 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
 {
     private readonly ChapterHuyNqRepository _chapterRepo = chapterRepo;
 
-    public async Task<int> CreateAsync(ChapterHuyNq chapter)
+    public async Task<int> CreateAsync(ChapterCreateRequest chapter)
     {
         try
         {
-            return await _chapterRepo.CreateAsync(chapter);
+            var item = chapter.Adapt<ChapterHuyNq>();
+            return await _chapterRepo.CreateAsync(item);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
+            throw new Exception(ex.Message);
         }
-
-        return 0;
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -44,19 +45,21 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         {
             return await _chapterRepo.GetAllAsync();
         }
-        catch
+        catch (Exception ex)
         {
-
+            Console.WriteLine(ex.Message);
         }
 
         return [];
     }
 
-    public async Task<ChapterHuyNq?> GetByIdAsync(int id)
+    public async Task<ChapterGetByIdResponse?> GetByIdAsync(int id)
     {
         try
         {
-            return await _chapterRepo.GetByIdAsync(id);
+            var item = await _chapterRepo.GetByIdAsync(id);
+            var response = item.Adapt<ChapterGetByIdResponse>();
+            return response;
         }
         catch
         {
@@ -80,8 +83,22 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         return [];
     }
 
-    public Task<int> UpdateAsync(ChapterHuyNq chapter)
+    public async Task<int> UpdateAsync(int id, ChapterUpdateRequest chapter)
     {
-        throw new NotImplementedException();
+        if (chapter.ChapterMetaHuynqId == null)
+        {
+            Console.WriteLine("ChapterMetaHuynqId is required for update.");
+            return 0;
+        }
+
+        var existingChapter = await _chapterRepo.GetByIdAsync(id);
+        if (existingChapter == null)
+        {
+            Console.WriteLine("Chapter is not found.");
+            return 0;
+        }
+
+        chapter.Adapt(existingChapter);
+        return await _chapterRepo.UpdateAsync(existingChapter);
     }
 }

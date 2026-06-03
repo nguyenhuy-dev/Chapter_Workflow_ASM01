@@ -1,7 +1,11 @@
+using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Repositories.HuyNQ;
 using MangaWorkflow.Services.HuyNQ;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -69,6 +73,19 @@ builder.Services.AddSwaggerGen(option =>
             Array.Empty<string>()
         }
     });
+});
+
+static IEdmModel GetEdmModel()
+{
+    var odataBuilder = new ODataConventionModelBuilder();
+    odataBuilder.EntitySet<ChapterHuyNq>("ChapterHuyNq");
+
+    return odataBuilder.GetEdmModel();
+}
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.Select().Filter().OrderBy().Expand().SetMaxTop(null).Count();
+    options.AddRouteComponents("odata", GetEdmModel());
 });
 
 var app = builder.Build();

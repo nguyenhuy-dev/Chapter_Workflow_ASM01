@@ -69,15 +69,15 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         return null;
     }
 
-    public async Task<List<ChapterHuyNq>> SearchAsync(string? title, int? chapterNumber, bool? approved)
+    public async Task<List<ChapterHuyNq>> SearchAsync(ChapterSearchRequest request)
     {
         try
         {
-            return await _chapterRepo.SearchAsync(title, chapterNumber, approved);
+            return await _chapterRepo.SearchAsync(request.Title, request.ChapterNumber, request.Approved);
         }
-        catch
+        catch (Exception ex)
         {
-
+            Console.WriteLine(ex.Message);
         }
 
         return [];

@@ -7,7 +7,7 @@ public interface IChapterHuyNqService
 {
     Task<List<ChapterHuyNq>> GetAllAsync();
     Task<ChapterGetByIdResponse?> GetByIdAsync(int id);
-    Task<List<ChapterHuyNq>> SearchAsync(string? title, int? chapterNumber, bool? approved);
+    Task<List<ChapterHuyNq>> SearchAsync(ChapterSearchRequest request);
 
     Task<int> CreateAsync(ChapterCreateRequest chapter);
     Task<int> UpdateAsync(int id, ChapterUpdateRequest chapter);

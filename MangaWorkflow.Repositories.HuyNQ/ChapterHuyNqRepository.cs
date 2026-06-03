@@ -33,7 +33,7 @@ public class ChapterHuyNqRepository : GenericRepository<ChapterHuyNq>
         return await _context.ChapterHuyNqs
             .Include(x => x.ChapterMetaHuynq)
             .Where(x =>
-                (string.IsNullOrEmpty(title) || title.Contains(x.Title)) &&
+                (string.IsNullOrEmpty(title) || x.Title.Contains(title)) &&
                 (chapterNumber == null || chapterNumber == x.ChapterNumber) &&
                 (approved == null || approved == x.Approved)
             )

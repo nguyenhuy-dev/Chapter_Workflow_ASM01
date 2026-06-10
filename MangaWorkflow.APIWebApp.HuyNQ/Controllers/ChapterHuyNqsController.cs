@@ -29,7 +29,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
         }
 
         return [];
@@ -53,7 +53,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
             var apiResponse = new ApiResponse<ChapterGetByIdResponse>
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
@@ -96,7 +96,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         } 
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
             var apiResponse = new ApiResponse<string?>
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
@@ -114,7 +114,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
     {
         try
         {
-            var existingChapter = await _chapterHuyNqService.GetByIdAsync(id) ?? throw new Exception("Chapter not found");
+            var existingChapter = await _chapterHuyNqService.GetByIdAsync(id) ?? throw new InvalidDataException("Chapter is not found");
             var response = await _chapterHuyNqService.UpdateAsync(id, request);
 
             if (response > 0)
@@ -138,8 +138,10 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                 return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
+
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the chapter.");
         }
     }
@@ -175,7 +177,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
             var apiResponse = new ApiResponse<string?>
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
@@ -203,7 +205,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
             var apiResponse = new ApiResponse<List<ChapterHuyNq>>
             {
                 StatusCode = StatusCodes.Status500InternalServerError,

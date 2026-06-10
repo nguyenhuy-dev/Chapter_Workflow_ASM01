@@ -16,9 +16,9 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
             var item = chapter.Adapt<ChapterHuyNq>();
             return await _chapterRepo.CreateAsync(item);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception(ex.Message);
+            throw;
         }
     }
 
@@ -26,17 +26,15 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
     {
         try
         {
-            var item = await _chapterRepo.GetByIdAsync(id);
+            var item = await _chapterRepo.GetByIdAsync(id) ?? throw new InvalidDataException("Chapter is not found");
             if (item == null)
                 return false;
             return await _chapterRepo.RemoveAsync(item);
         }
-        catch (Exception)
+        catch
         {
-
+            throw;
         }
-
-        return false;
     }
 
     public async Task<List<ChapterHuyNq>> GetAllAsync()
@@ -45,28 +43,24 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         {
             return await _chapterRepo.GetAllAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine(ex.Message);
+            throw;
         }
-
-        return [];
     }
 
     public async Task<ChapterGetByIdResponse?> GetByIdAsync(int id)
     {
         try
         {
-            var item = await _chapterRepo.GetByIdAsync(id);
+            var item = await _chapterRepo.GetByIdAsync(id) ?? throw new InvalidDataException("Chapter is not found");
             var response = item.Adapt<ChapterGetByIdResponse>();
             return response;
         }
         catch
         {
-
+            throw;
         }
-
-        return null;
     }
 
     public async Task<List<ChapterHuyNq>> SearchAsync(ChapterSearchRequest request)
@@ -75,12 +69,10 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         {
             return await _chapterRepo.SearchAsync(request.Title, request.ChapterNumber, request.Approved);
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine(ex.Message);
+            throw;
         }
-
-        return [];
     }
 
     public async Task<int> UpdateAsync(int id, ChapterUpdateRequest chapter)
@@ -91,12 +83,7 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
             return 0;
         }
 
-        var existingChapter = await _chapterRepo.GetByIdAsync(id);
-        if (existingChapter == null)
-        {
-            Console.WriteLine("Chapter is not found.");
-            return 0;
-        }
+        var existingChapter = await _chapterRepo.GetByIdAsync(id) ?? throw new InvalidDataException("Chapter is not found");
 
         chapter.Adapt(existingChapter);
         return await _chapterRepo.UpdateAsync(existingChapter);

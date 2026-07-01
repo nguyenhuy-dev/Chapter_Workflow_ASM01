@@ -1,4 +1,5 @@
-﻿using MangaWorkflow.Entities.HuyNQ.Models;
+using MangaWorkflow.APIWebApp.HuyNQ.Commons;
+using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Services.HuyNQ;
 using MangaWorkflow.Services.HuyNQ.DTOs.User;
 using Mapster;
@@ -17,11 +18,13 @@ public class SystemUserAccountsController : ControllerBase
 {
     private readonly IConfiguration _config;
     private readonly ISystemUserAccountService _userAccountsService;
+    private readonly ITokenBlacklistService _tokenBlacklist;
 
-    public SystemUserAccountsController(IConfiguration config, ISystemUserAccountService userAccountsService)
+    public SystemUserAccountsController(IConfiguration config, ISystemUserAccountService userAccountsService, ITokenBlacklistService tokenBlacklist)
     {
         _config = config;
         _userAccountsService = userAccountsService;
+        _tokenBlacklist = tokenBlacklist;
     }
 
     [HttpPost("Login")]
@@ -36,6 +39,45 @@ public class SystemUserAccountsController : ControllerBase
         var token = GenerateJSONWebToken(user);
 
         return Ok(token);
+    }
+
+    [Authorize]
+    [HttpPost("Logout")]
+    public IActionResult Logout()
+    {
+        var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+        if (string.IsNullOrEmpty(jti))
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, new ApiResponse<string?>
+            {
+                StatusCode = StatusCodes.Status400BadRequest,
+                Message = "Token does not contain a valid identifier.",
+                Data = null
+            });
+        }
+
+        // Revoke the token until its own expiry so it can no longer be used.
+        var expiresUtc = GetTokenExpiryUtc();
+        _tokenBlacklist.Revoke(jti, expiresUtc);
+
+        return StatusCode(StatusCodes.Status200OK, new ApiResponse<string?>
+        {
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Logged out successfully",
+            Data = null
+        });
+    }
+
+    private DateTime GetTokenExpiryUtc()
+    {
+        var expClaim = User.FindFirst(JwtRegisteredClaimNames.Exp)?.Value;
+
+        if (long.TryParse(expClaim, out var expSeconds))
+            return DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+
+        // Fallback: mirror the token lifetime used at login.
+        return DateTime.UtcNow.AddMinutes(120);
     }
 
     private string GenerateJSONWebToken(SystemUserAccount systemUserAccount)
@@ -55,6 +97,7 @@ public class SystemUserAccountsController : ControllerBase
                 , _config["Jwt:Audience"]
                 , new Claim[]
                 {
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.Name, systemUserAccount.UserName),
                 //new(ClaimTypes.Email, systemUserAccount.Email),
                 new(ClaimTypes.Role, systemUserAccount.RoleId.ToString()),

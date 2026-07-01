@@ -1,7 +1,9 @@
+using MangaWorkflow.APIWebApp.HuyNQ.Commons;
 using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Repositories.HuyNQ;
 using MangaWorkflow.Services.HuyNQ;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
@@ -25,6 +27,9 @@ builder.Services.AddScoped<IChapterHuyNqService, ChapterHuyNqService>();
 builder.Services.AddScoped<SystemUserAccountRepository>();
 builder.Services.AddScoped<ISystemUserAccountService, SystemUserAccountService>();
 
+// Tracks tokens revoked via logout. Singleton so the in-memory store is shared.
+builder.Services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -44,6 +49,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             // ClockSkew = TimeSpan.Zero
+        };
+
+        // Reject tokens that were revoked through the logout endpoint.
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                var blacklist = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistService>();
+
+                if (jti != null && blacklist.IsRevoked(jti))
+                    context.Fail("This token has been revoked.");
+
+                return Task.CompletedTask;
+            }
         };
     });
 builder.Services.AddSwaggerGen(option =>
@@ -99,6 +119,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

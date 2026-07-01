@@ -1,5 +1,4 @@
-﻿using Azure;
-using MangaWorkflow.APIWebApp.HuyNQ.Commons;
+﻿using MangaWorkflow.APIWebApp.HuyNQ.Commons;
 using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Services.HuyNQ;
 using MangaWorkflow.Services.HuyNQ.DTOs.Chapter;

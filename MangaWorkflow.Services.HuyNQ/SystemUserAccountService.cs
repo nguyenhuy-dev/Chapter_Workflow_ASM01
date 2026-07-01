@@ -12,7 +12,7 @@ public class SystemUserAccountService(SystemUserAccountRepository userRepo) : IS
     {
         try
         {
-            var user = await Task.Run(() => _userRepo.GetUserAccount(request.UserName, request.Password));
+            var user = await Task.Run(() => _userRepo.GetUserAccount(request.Email, request.Password));
 
             if (user == null) return null;
 
@@ -21,7 +21,10 @@ public class SystemUserAccountService(SystemUserAccountRepository userRepo) : IS
 
             return user.Adapt<GetUserAccountResponse>();
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
         return null;
     }

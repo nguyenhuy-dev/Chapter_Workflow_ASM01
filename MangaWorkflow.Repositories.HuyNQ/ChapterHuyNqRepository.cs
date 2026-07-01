@@ -28,15 +28,24 @@ public class ChapterHuyNqRepository : GenericRepository<ChapterHuyNq>
             .FirstOrDefaultAsync(x => x.HuynqId == id);
     }
 
-    public async Task<List<ChapterHuyNq>> SearchAsync(string? title, int? chapterNumber, bool? approved)
+    public async Task<(List<ChapterHuyNq> Items, int TotalItems)> SearchAsync(string? title, int? chapterNumber, bool? approved, int pageNumber, int pageSize)
     {
-        return await _context.ChapterHuyNqs
+        var query = _context.ChapterHuyNqs
             .Include(x => x.ChapterMetaHuynq)
             .Where(x =>
                 (string.IsNullOrEmpty(title) || x.Title.Contains(title)) &&
                 (chapterNumber == null || chapterNumber == x.ChapterNumber) &&
                 (approved == null || approved == x.Approved)
-            )
+            );
+
+        var totalItems = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(x => x.HuynqId)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return (items, totalItems);
     }
 }

@@ -9,7 +9,7 @@ public class ChapterUpdateRequest
 
     [Required(ErrorMessage = "Title is required.")]
     [StringLength(255, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 255 characters.")]
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
     [Range(1, int.MaxValue, ErrorMessage = "ChapterNumber must be a positive number.")]
     public int? ChapterNumber { get; set; }

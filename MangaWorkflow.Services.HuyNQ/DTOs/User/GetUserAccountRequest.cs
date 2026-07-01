@@ -5,6 +5,7 @@ namespace MangaWorkflow.Services.HuyNQ.DTOs.User;
 public class GetUserAccountRequest
 {
     [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress]
     [StringLength(50, MinimumLength = 1, ErrorMessage = "Email must be between 1 and 50 characters.")]
     public string Email { get; set; } = default!;
 

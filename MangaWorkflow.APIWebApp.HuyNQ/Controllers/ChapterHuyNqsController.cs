@@ -2,6 +2,7 @@
 using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Services.HuyNQ;
 using MangaWorkflow.Services.HuyNQ.DTOs.Chapter;
+using MangaWorkflow.Services.HuyNQ.DTOs.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -194,7 +195,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         try
         {
             var response = await _chapterHuyNqService.SearchAsync(request);
-            var apiResponse = new ApiResponse<List<ChapterHuyNq>>
+            var apiResponse = new ApiResponse<PagedResult<ChapterHuyNq>>
             {
                 StatusCode = StatusCodes.Status200OK,
                 Message = "Chapters retrieved successfully",
@@ -205,7 +206,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            var apiResponse = new ApiResponse<List<ChapterHuyNq>>
+            var apiResponse = new ApiResponse<PagedResult<ChapterHuyNq>>
             {
                 StatusCode = StatusCodes.Status500InternalServerError,
                 Message = "Chapters retrieved unsuccessfully",

@@ -1,6 +1,7 @@
 ﻿using MangaWorkflow.Entities.HuyNQ.Models;
 using MangaWorkflow.Repositories.HuyNQ;
 using MangaWorkflow.Services.HuyNQ.DTOs.Chapter;
+using MangaWorkflow.Services.HuyNQ.DTOs.Common;
 using Mapster;
 
 namespace MangaWorkflow.Services.HuyNQ;
@@ -63,11 +64,20 @@ public class ChapterHuyNqService(ChapterHuyNqRepository chapterRepo) : IChapterH
         }
     }
 
-    public async Task<List<ChapterHuyNq>> SearchAsync(ChapterSearchRequest request)
+    public async Task<PagedResult<ChapterHuyNq>> SearchAsync(ChapterSearchRequest request)
     {
         try
         {
-            return await _chapterRepo.SearchAsync(request.Title, request.ChapterNumber, request.Approved);
+            var (items, totalItems) = await _chapterRepo.SearchAsync(
+                request.Title, request.ChapterNumber, request.Approved, request.PageNumber, request.PageSize);
+
+            return new PagedResult<ChapterHuyNq>
+            {
+                Items = items,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalItems = totalItems
+            };
         }
         catch
         {

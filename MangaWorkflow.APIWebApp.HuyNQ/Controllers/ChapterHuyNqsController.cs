@@ -67,7 +67,7 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
     // POST api/<ChapterHuyNqsController>
     [Authorize(Roles = "1")]
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] ChapterCreateRequest request)
+    public async Task<int> Post([FromBody] ChapterCreateRequest request)
     {
         try
         {
@@ -79,9 +79,10 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                 {
                     StatusCode = StatusCodes.Status201Created,
                     Message = "Chapter created successfully",
-                    Data = null
+                    Data = response.ToString()
                 };
-                return StatusCode(StatusCodes.Status201Created, apiResponse);
+                //return StatusCode(StatusCodes.Status201Created, apiResponse);
+                return response;
             }
             else
             {
@@ -91,7 +92,8 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                     Message = "Chapter created unsuccessfully",
                     Data = null
                 };
-                return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+                //return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+                return response;
             }
         } 
         catch (Exception ex)
@@ -103,14 +105,15 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                 Message = "Chapter created unsuccessfully",
                 Data = null
             };
-            return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+            //return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+            return 0;
         }
     }
 
     // PUT api/<ChapterHuyNqsController>/5
     [Authorize(Roles = "1")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] ChapterUpdateRequest request)
+    public async Task<int> Put(int id, [FromBody] ChapterUpdateRequest request)
     {
         try
         {
@@ -123,9 +126,11 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                 {
                     StatusCode = StatusCodes.Status200OK,
                     Message = "Chapter updated successfully",
-                    Data = null
+                    Data = response.ToString()
                 };
-                return StatusCode(StatusCodes.Status200OK, apiResponse);
+                //return StatusCode(StatusCodes.Status200OK, apiResponse);
+
+                return response;
             } 
             else
             {
@@ -135,21 +140,24 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                     Message = "Chapter updated unsuccessfully",
                     Data = null
                 };
-                return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+                //return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+
+                return response;
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the chapter.");
+            //return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the chapter.");
+            return 0;
         }
     }
 
     // DELETE api/<ChapterHuyNqsController>/5
     [Authorize(Roles = "1")]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
         try
         {
@@ -158,11 +166,12 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
             {
                 var apiResponse = new ApiResponse<string?>
                 {
-                    StatusCode= StatusCodes.Status200OK,
+                    StatusCode = StatusCodes.Status200OK,
                     Message = "Chapter deleted successfully",
-                    Data = null
+                    Data = isDeleted.ToString()
                 };
-                return StatusCode(StatusCodes.Status200OK, apiResponse);
+                // return StatusCode(StatusCodes.Status200OK, apiResponse);
+                return isDeleted;
             }
             else
             {
@@ -172,7 +181,8 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                     Message = "Chapter deleted unsuccessfully",
                     Data = null
                 };
-                return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+                //return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+                return isDeleted;
             }
         }
         catch (Exception ex)
@@ -184,7 +194,8 @@ public class ChapterHuyNqsController(IChapterHuyNqService chapterHuyNqService) :
                 Message = "Chapter deleted unsuccessfully",
                 Data = null
             };
-            return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+            //return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
+            return false;
         }
     }
 
